@@ -1,0 +1,5 @@
+- Factor dimensions: number of possible factors for each modality of observation and states (hidden and control)
+  - `num_obs = [3, 5] # observation modality dimensions`
+  - `num_states = [4, 2, 3] # hidden state factor dimensions`
+  - `num_controls = [4, 1, 1] # control state factor dimensions`
+  - That is, two modalities of observation with 3 and 5 possible sensory outcomes. Three hidden states with 4, 2 and 3 possible values for each latent variable that the agent believes can generate the observations. Three control states with 4, 1 and 1 possible actions. 
