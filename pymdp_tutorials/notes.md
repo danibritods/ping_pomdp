@@ -22,3 +22,23 @@
         A[modality] = norm_dist(modality_dist)
     return A 
     ```
+
+- `B matrix`: transitioning likelihood matrix
+  - This matrix model the likelihood of each transition between hidden states  considering the value of each control state.
+  - This matrix encondes the agent's beliefs about how its actions affects the states of the world and its own states. 
+  - ```python 
+    def random_B_matrix(num_states, num_controls):
+    if type(num_states) is int:
+        num_states = [num_states]
+    if type(num_controls) is int:
+        num_controls = [num_controls]
+    num_factors = len(num_states)
+    assert len(num_controls) == len(num_states)
+
+    B = obj_array(num_factors)
+    for factor in range(num_factors):
+        factor_shape = (num_states[factor], num_states[factor], num_controls[factor])
+        factor_dist = np.random.rand(*factor_shape)
+        B[factor] = norm_dist(factor_dist)
+    return B
+    ```
