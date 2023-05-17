@@ -42,3 +42,6 @@
         B[factor] = norm_dist(factor_dist)
     return B
     ```
+
+- `C Vector`: vector of preferences
+  - Agent's preference for each possible observation. 
