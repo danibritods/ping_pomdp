@@ -45,3 +45,7 @@
 
 - `C Vector`: vector of preferences
   - Agent's preference for each possible observation. 
+
+- `qs`: hidden states values after observation 
+  - The posterior distribution is the agent’s updated belief about the state of the world after receiving new sensory evidence.
+  - the infer_states method implements a variational message passing algorithm that approximates the posterior distribution by minimizing the variational free energy.
