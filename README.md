@@ -22,6 +22,7 @@ This study inspired me to pursue a similar project, but using a computational mo
 
 
 
+[monograph]: docs/PingPOMDP.pdf
 [kagan2022]: https://linkinghub.elsevier.com/retrieve/pii/S0896627322008066
 [img:kagan22_conceptual]: docs/kagan22_conceptual_model.jpg
 [monograph]: docs/PingPOMDP.pdf
