@@ -2,7 +2,7 @@
 Making a POMDP model learn to play Pong.
  
 This is my final project to obtain the degree of Bachelor in Computer Science. 
-You can read my [monogaph draft][monograph] and see its [(🇧🇷 pt-br) presentation][presentation]. 
+You can read my [monogaph draft][monograph] and see its [presentation🇧🇷][presentation]. 
 
 ## Introduction 
 Recently, [Kagan et al. (2022)][kagan2022] demonstrated that in vitro neurons can learn and exhibit sentience when embodied in a simulated game-world receiving only sensory, predictable, and unpredictable feedback. They used a high-density electrode grid to interface the neurons with a Pong game, where the neurons could control the paddle and receive feedback from the game. The results showed that the neurons adapted their activity to maximize the score and avoid losing. The following image shows a conceptual model of the paper.
