@@ -1,5 +1,6 @@
 # ping_pomdp
-Making a POMDP model learn to play Pong. 
+Making a POMDP model learn to play Pong. This is my final project to obtain the degree of Bachelor in Computer Science. 
+You can read my [monogaph draft][monograph] and see its [(PT-BR) presentation][presentation]. 
 
 ## Introduction 
 Recently, [Kagan et al. (2022)][kagan2022] demonstrated that in vitro neurons can learn and exhibit sentience when embodied in a simulated game-world receiving only sensory, predictable, and unpredictable feedback. They used a high-density electrode grid to interface the neurons with a Pong game, where the neurons could control the paddle and receive feedback from the game. The results showed that the neurons adapted their activity to maximize the score and avoid losing. The following image shows a conceptual model of the paper.
@@ -22,8 +23,9 @@ This study inspired me to pursue a similar project, but using a computational mo
 
 
 [kagan2022]: https://linkinghub.elsevier.com/retrieve/pii/S0896627322008066
-
 [img:kagan22_conceptual]: docs/kagan22_conceptual_model.jpg
+[monograph]: docs/PingPOMDP.pdf
+[presentation]: https://docs.google.com/presentation/d/11nIBT0JyMc6adKcwV-77EfZQtfFBNM5DIv4i2dRdgFo/edit?usp=sharing
 [img:kagan22_abstract]: docs/kagan22_graphical_abstract.jpg
 [img:kagan22_electrode_layout]: docs/kagan22_electrode_layout.jpg
 [img:brito23_interface]: docs/brito23_interface.png
