@@ -28,6 +28,11 @@ class PongUI:
         # self.game.reset()
 
         while not done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
             # action = self.get_player_input()
             # self.game.step(action)
 
@@ -71,7 +76,6 @@ class PongGame():
         self.ball_y += self.ball_speed[1]
 
         self.paddle_y += (action * self.paddle_speed)
-        print(self.paddle_y)
         
         #status(hit(1),miss(-1),None(0))
         status = self.check_collision()
@@ -91,13 +95,10 @@ if __name__ == "__main__":
     ui = PongUI(game)
     x = threading.Timer(1,ui.run)
     x.start()
-    # ui.run()
-    time.sleep(10)
-    print("testing2")
-    
+     
     for i in range(50):
         action = int(input("action: "))
-        game.step(1)
+        game.step(action)
 
 
 
