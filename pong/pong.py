@@ -36,22 +36,15 @@ class PongUI:
                         self.game.step(1)
                     if event.key == pygame.K_UP:
                         self.game.step(-1)   
-                
             self.game.step(0)
-
-            # action = self.get_player_input()
-            # self.game.step(action)
 
             self.ball.x = self.game.ball_x
             self.ball.y = self.game.ball_y
             self.player_paddle.y = self.game.paddle_y
 
             # Update display
-            
             elapsed_frames_text = self.font.render(f"Elapsed Frames: {frame_count}", True, (255, 255, 255))
-
             self.screen.fill(self.black)
-
             self.screen.blit(elapsed_frames_text, (10, 10))
 
             pygame.draw.rect(self.screen, self.white, self.player_paddle)
@@ -62,7 +55,7 @@ class PongUI:
 
 class PongGame():
     def __init__(self):
-        self.ball_speed = (5,5)
+        self.ball_speed = [5,5]
         self.ball_radius = 30
 
         self.paddle_speed = 10
@@ -77,8 +70,8 @@ class PongGame():
 
     def reset(self):
         # Initialize game state
-        self.ball_x = 0
-        self.ball_y = 0
+        self.ball_x = 320
+        self.ball_y = 240
 
         self.paddle_y = 240
 
@@ -101,6 +94,22 @@ class PongGame():
         return status, self.rally, self.paddle_y, self.ball_x, self.ball_y
 
     def check_collision(self):
+        paddle_top = self.paddle_y + self.paddle_height
+        paddle_down = self.paddle_y - self.paddle_height
+        paddle_right = self.paddle_x + self.paddle_width
+
+        if (paddle_right <= self.ball_x) and paddle_right + 1 >= self.ball_x  and (self.ball_y - 30 <= paddle_top and self.ball_y + 30 >= paddle_down):
+            self.ball_speed[0] *= -1
+            self.ball_speed[1] *= -1
+
+        if self.ball_x + 30 >= self.screen_width:
+            self.ball_speed[0] *= -1
+
+        if self.ball_y + 30 >= self.screen_height or self.ball_y <= 0:
+            self.ball_speed[1] *= -1
+        
+        if self.ball_x < 0:
+            self.reset() 
         return 0
 
 if __name__ == "__main__":
