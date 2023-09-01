@@ -94,22 +94,30 @@ class PongGame():
         return status, self.rally, self.paddle_y, self.ball_x, self.ball_y
 
     def check_collision(self):
-        paddle_top = self.paddle_y + self.paddle_height
-        paddle_down = self.paddle_y - self.paddle_height
+        paddle_top = self.paddle_y
+        paddle_bottom = self.paddle_y + self.paddle_height
         paddle_right = self.paddle_x + self.paddle_width
 
-        if (paddle_right <= self.ball_x) and paddle_right + 1 >= self.ball_x  and (self.ball_y - 30 <= paddle_top and self.ball_y + 30 >= paddle_down):
+        ball_top = self.ball_y
+        ball_bottom = self.ball_y + self.ball_radius
+        ball_left = self.ball_x
+        ball_right = self.ball_x + self.ball_radius
+
+        if (paddle_right <= ball_left < paddle_right + 1) and (
+            ball_bottom >= paddle_top and ball_top <= paddle_bottom):
+
             self.ball_speed[0] *= -1
             self.ball_speed[1] *= -1
+            return 1
 
-        if self.ball_x + 30 >= self.screen_width:
+        if ball_right >= self.screen_width:
             self.ball_speed[0] *= -1
 
-        if self.ball_y + 30 >= self.screen_height or self.ball_y <= 0:
+        if ball_bottom >= self.screen_height or ball_top <= 0:
             self.ball_speed[1] *= -1
         
         if self.ball_x < 0:
-            self.reset() 
+            return -1
         return 0
 
 if __name__ == "__main__":
