@@ -1,7 +1,5 @@
 import random
 import pygame
-import threading
-import time
 
 class PongUI:
     def __init__(self, game):
@@ -19,10 +17,6 @@ class PongUI:
 
         self.game = game
 
-    def get_player_input(self):
-        # Handle player input here
-        pass
-
     def run(self):
         done = False
         # self.game.reset()
@@ -32,6 +26,13 @@ class PongUI:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:
+                        self.game.step(1)
+                    if event.key == pygame.K_UP:
+                        self.game.step(-1)   
+                
+            self.game.step(0)
 
             # action = self.get_player_input()
             # self.game.step(action)
