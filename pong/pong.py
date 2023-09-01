@@ -58,10 +58,10 @@ class PongGame():
         self.ball_speed = [5,5]
         self.ball_radius = 30
 
-        self.paddle_speed = 10
+        self.paddle_speed = 30
         self.paddle_width = 15
-        self.paddle_height = 140
-        self.paddle_x = 0
+        self.paddle_height = 200
+        self.paddle_x = 10
 
         self.screen_width = 640
         self.screen_height = 480
@@ -70,10 +70,10 @@ class PongGame():
 
     def reset(self):
         # Initialize game state
-        self.ball_x = 320
-        self.ball_y = 240
+        self.ball_x = self.screen_width * 0.8
+        self.ball_y = self.screen_height * 0.2
 
-        self.paddle_y = 240
+        self.paddle_y = self.screen_height/2 - self.paddle_height/2
 
         self.rally = 0
 
@@ -103,25 +103,25 @@ class PongGame():
         ball_left = self.ball_x
         ball_right = self.ball_x + self.ball_radius
 
-        if (paddle_right <= ball_left < paddle_right + 1) and (
+        if (paddle_right - 20 <= ball_left  < paddle_right + 5) and (
             ball_bottom >= paddle_top and ball_top <= paddle_bottom):
-
+            print("hit!!")
             self.ball_speed[0] *= -1
             self.ball_speed[1] *= -1
             return 1
+        else:
+            if self.ball_x < 0:
+                return -1
+            
+            if ball_right >= self.screen_width:
+                self.ball_speed[0] *= -1
 
-        if ball_right >= self.screen_width:
-            self.ball_speed[0] *= -1
-
-        if ball_bottom >= self.screen_height or ball_top <= 0:
-            self.ball_speed[1] *= -1
-        
-        if self.ball_x < 0:
-            return -1
-        return 0
+            if ball_bottom >= self.screen_height or ball_top <= 0:
+                self.ball_speed[1] *= -1
+            
+            return 0
 
 if __name__ == "__main__":
-    print("test")
     game = PongGame()
     ui = PongUI(game)
     ui.run()
