@@ -15,6 +15,7 @@ class PongUI:
         self.black = (0, 0, 0)
         self.white = (255, 255, 255)
         self.font = pygame.font.Font(None, 36)
+        self.font_big = pygame.font.Font(None,72)
         self.fps = 60
         self.clock = pygame.time.Clock()
 
@@ -43,9 +44,13 @@ class PongUI:
             self.player_paddle.y = self.game.paddle_y
 
             # Update display
-            elapsed_frames_text = self.font.render(f"Elapsed Frames: {frame_count}", True, (255, 255, 255))
+            # elapsed_frames_text = self.font.render(f"Elapsed Frames: {frame_count}", True, self.white)
+            rally_text = self.font_big.render(f"{self.game.rally}", True, self.white)
+
+
             self.screen.fill(self.black)
-            self.screen.blit(elapsed_frames_text, (10, 10))
+            # self.screen.blit(elapsed_frames_text, (10, 10))
+            self.screen.blit(rally_text, (self.game.screen_width/2, 10))
 
             pygame.draw.rect(self.screen, self.white, self.player_paddle)
             pygame.draw.ellipse(self.screen, self.white, self.ball)
@@ -104,8 +109,7 @@ class PongGame():
         ball_right = self.ball_x + self.ball_radius
 
         if (paddle_right - 20 <= ball_left  < paddle_right + 5) and (
-            ball_bottom >= paddle_top and ball_top <= paddle_bottom):
-            print("hit!!")
+            ball_bottom >= paddle_top and ball_top <= paddle_bottom):  
             self.ball_speed[0] *= -1
             self.ball_speed[1] *= -1
             return 1
