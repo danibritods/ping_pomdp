@@ -142,6 +142,15 @@ class PongGame():
         
             return ball_x, ball_y, ball_speed
         
+        if mode == "rand":
+            #random mode
+            #same x coordinate, random y 
+            #same x speed, random y 
+            ball_x = self.screen_width * 0.8
+            ball_y = random.randint(self.screen_height * 0.2, self.screen_height * 0.8)
+            ball_speed = [-5,random.randint(-10,10)]
+            
+            return ball_x, ball_y, ball_speed
 if __name__ == "__main__":
     game = PongGame()
     ui = PongUI(game)
