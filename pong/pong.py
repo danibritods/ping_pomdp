@@ -109,8 +109,9 @@ class PongGame():
         ball_right = self.ball_x + self.ball_radius
         ball_x_speed = self.ball_speed[0]
 
-        #paddle_right - ball_x_speed establishes a collision area appropriate to the horizontal speed
-        if (paddle_right - ball_x_speed  <= ball_left  <= paddle_right) and (
+        #paddle_right + ball_x_speed establishes a collision area appropriate to the horizontal speed
+        #remember the ball_x_speed is negative
+        if (paddle_right + ball_x_speed <= ball_left  <= paddle_right) and (
             ball_bottom >= paddle_top and ball_top <= paddle_bottom):  
             self.ball_speed[0] *= -1
 
