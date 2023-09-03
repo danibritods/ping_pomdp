@@ -75,8 +75,7 @@ class PongGame():
 
     def reset(self):
         # Initialize game state
-        self.ball_x = self.screen_width * 0.8
-        self.ball_y = self.screen_height * 0.2
+        self.ball_x, self.ball_y, self.ball_speed = self._launch_ball()
 
         self.paddle_y = (self.screen_height - self.paddle_height) / 2
 
@@ -133,7 +132,15 @@ class PongGame():
                 self.ball_speed[1] *= -1
             
             return 0
-
+        
+    def _launch_ball(self, mode = "fix"):
+        if mode == "fix":
+            ball_x = self.screen_width * 0.8
+            ball_y = self.screen_height * 0.2
+            ball_speed = [-5,5]
+        
+            return ball_x, ball_y, ball_speed
+        
 if __name__ == "__main__":
     game = PongGame()
     ui = PongUI(game)
