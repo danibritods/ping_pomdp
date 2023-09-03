@@ -60,16 +60,16 @@ class PongUI:
 
 class PongGame():
     def __init__(self):
-        self.ball_speed = [5,5]
+        self.screen_width = 320 #640
+        self.screen_height = 480
+
         self.ball_radius = 30
 
         self.paddle_speed = 30
         self.paddle_width = 15
-        self.paddle_height = 200
+        self.paddle_height = self.screen_height * 0.4
         self.paddle_x = 10
 
-        self.screen_width = 640
-        self.screen_height = 480
 
         self.reset()
 
@@ -78,7 +78,7 @@ class PongGame():
         self.ball_x = self.screen_width * 0.8
         self.ball_y = self.screen_height * 0.2
 
-        self.paddle_y = self.screen_height/2 - self.paddle_height/2
+        self.paddle_y = (self.screen_height - self.paddle_height) / 2
 
         self.rally = 0
 
@@ -90,7 +90,7 @@ class PongGame():
         self.paddle_y += (action * self.paddle_speed)
         
         #status(hit(1),miss(-1),None(0))
-        status = self._check_collision()
+        status = self.check_collision()
         if status == -1:
             self.reset()
         else:
@@ -98,7 +98,7 @@ class PongGame():
 
         return status, self.rally, self.paddle_y, self.ball_x, self.ball_y
 
-    def _check_collision(self):
+    def check_collision(self):
         paddle_top = self.paddle_y
         paddle_bottom = self.paddle_y + self.paddle_height
         paddle_right = self.paddle_x + self.paddle_width
