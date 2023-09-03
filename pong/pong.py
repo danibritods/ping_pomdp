@@ -70,6 +70,9 @@ class PongGame():
         self.paddle_height = self.screen_height * 0.4
         self.paddle_x = 10
 
+        #"rand" or "fix"
+        self.launch_ball_mode = "rand"
+
 
         self.reset()
 
@@ -134,15 +137,16 @@ class PongGame():
             
             return 0
         
-    def _launch_ball(self, mode = "fix"):
-        if mode == "fix":
+    def _launch_ball(self):
+
+        if self.launch_ball_mode == "fix":
             ball_x = self.screen_width * 0.8
             ball_y = self.screen_height * 0.2
             ball_speed = [-5,5]
         
             return ball_x, ball_y, ball_speed
         
-        if mode == "rand":
+        if self.launch_ball_mode == "rand":
             #random mode
             #same x coordinate, random y 
             #same x speed, random y 
