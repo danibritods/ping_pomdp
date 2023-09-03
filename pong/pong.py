@@ -87,7 +87,13 @@ class PongGame():
         self.ball_x += self.ball_speed[0]
         self.ball_y += self.ball_speed[1]
 
-        self.paddle_y += (action * self.paddle_speed)
+        #block infinite paddle travel
+        if self.paddle_y <= 0 and action == -1:
+            pass
+        elif self.paddle_y >= self.screen_height - self.paddle_height and action == 1:
+            pass
+        else:
+            self.paddle_y += (action * self.paddle_speed)
         
         #status(hit(1),miss(-1),None(0))
         status = self._check_collision()
