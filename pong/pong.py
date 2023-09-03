@@ -90,7 +90,7 @@ class PongGame():
         self.paddle_y += (action * self.paddle_speed)
         
         #status(hit(1),miss(-1),None(0))
-        status = self.check_collision()
+        status = self._check_collision()
         if status == -1:
             self.reset()
         else:
@@ -98,7 +98,7 @@ class PongGame():
 
         return status, self.rally, self.paddle_y, self.ball_x, self.ball_y
 
-    def check_collision(self):
+    def _check_collision(self):
         paddle_top = self.paddle_y
         paddle_bottom = self.paddle_y + self.paddle_height
         paddle_right = self.paddle_x + self.paddle_width
@@ -107,13 +107,11 @@ class PongGame():
         ball_bottom = self.ball_y + self.ball_radius
         ball_left = self.ball_x
         ball_right = self.ball_x + self.ball_radius
-        ball_x_speed = self.ball_speed[0]
 
-        #paddle_right - ball_x_speed establishes a collision area appropriate to the horizontal speed
-        if (paddle_right - ball_x_speed  <= ball_left  <= paddle_right) and (
+        if (paddle_right - 20 <= ball_left  < paddle_right + 5) and (
             ball_bottom >= paddle_top and ball_top <= paddle_bottom):  
             self.ball_speed[0] *= -1
-
+            self.ball_speed[1] *= -1
             return 1
         else:
             if self.ball_x < 0:
