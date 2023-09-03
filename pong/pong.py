@@ -83,10 +83,11 @@ class PongGame():
 
     def step(self, action):
         """action: (-1,0,1)"""
+        #update ball position
         self.ball_x += self.ball_speed[0]
         self.ball_y += self.ball_speed[1]
 
-        #block infinite paddle travel
+        #update paddle movement within screen limits
         if self.paddle_y <= 0 and action == -1:
             pass
         elif self.paddle_y >= self.screen_height - self.paddle_height and action == 1:
@@ -94,7 +95,7 @@ class PongGame():
         else:
             self.paddle_y += (action * self.paddle_speed)
         
-        #status(hit(1),miss(-1),None(0))
+        #status: hit(1),miss(-1),None(0)
         status = self._check_collision()
         if status == -1:
             self.reset()
