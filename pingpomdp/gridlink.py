@@ -1,9 +1,11 @@
 import numpy as np
+RNG = np.random.default_rng(seed=42)
+
 GRID_SHAPE = (4,8)
 SENSORY_CELLS = (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
 OBSERVATION_MODE = "whole_grid" #agent can observe "whole_grid" or just "sensory_cells"
 N_PREDICTABLE_CYCLES = 200
-N_UNPREDICTABLE_CYCLES = 400
+N_UNPREDICTABLE_CYCLES = 5
 
 class Gridlink:
     def __init__(self, agent, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE):
@@ -12,6 +14,7 @@ class Gridlink:
         self.grid_array = np.zeros(grid_shape)
 
         self.sensory_cells = sensory_cells
+        self.n_sensory_cells = len(sensory_cells)
 
         if observation_mode == "whole_grid":
             self.send_observation = self.read_all
@@ -71,16 +74,20 @@ class Gridlink:
 
     def _predictable_feedback(self):
         for i in range(N_PREDICTABLE_CYCLES):
-            ones = np.ones(len(self.sensory_cells))
+            ones = np.ones(self.n_sensory_cells)
             self.write_sensory_cells(ones)
             self.agent.observe(self.send_observation())
 
-            zeros = np.zeros(len(self.sensory_cells))
+            zeros = np.zeros(self.n_sensory_cells)
             self.write_sensory_cells(zeros)
             self.agent.observe(self.send_observation())
 
     def _unpredictable_feedback(self):
-        pass
+        for i in range(N_UNPREDICTABLE_CYCLES):
+            rand_obs = RNG.integers(0,2,self.n_sensory_cells)
+            self.write_sensory_cells(rand_obs)
+            self.agent.observe(self.send_observation())
+            
         
 
     def _oneD_to_twoD(self,index):

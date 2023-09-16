@@ -39,3 +39,15 @@ def test_predictable_feedback():
     test_grid._predictable_feedback()
 
     npt.assert_array_equal(agent.observations, exp_obs)
+
+def test_unpredictable_feedback():
+    agent = ModelPatch()
+    test_grid = g.Gridlink(agent, (1,4),(1,2), observation_mode="sensory_cells")
+
+    exp_obs_shape = (g.N_UNPREDICTABLE_CYCLES, test_grid.n_sensory_cells)
+    rng = np.random.default_rng(seed=42) 
+    exp_obs = rng.integers(0,2,exp_obs_shape)
+
+    test_grid._unpredictable_feedback()
+
+    npt.assert_array_equal(agent.observations, exp_obs)
