@@ -26,13 +26,11 @@ class PingPOMDP:
         #my_agent = Agent( A = A_array, B = B_array, C = C_vector)
 
     def step(self):
-        env_state = self.env.state()
-        self.grid.observe(env_state)
-
         env_action = self.grid.act()
-        self.env.step(env_action)
+        env_state = self.env.step(env_action)
+
+        self.grid.observe(env_state)
 
 if __name__ == "__main__":
     p = PingPOMDP()
-
     p.step()
