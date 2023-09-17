@@ -64,13 +64,13 @@ class Gridlink:
 
 
     def _env_state_is_undesirable(self, env_state):
-        pass
+        raise NotImplementedError("Undesired state must be defined for each environment.")
 
     def env_state_is_desirable(self, env_state):
-        pass
+        raise NotImplementedError("Desired state must be defined for each environment.")
 
     def _sensory_feedback(env_state):
-        pass
+        raise NotImplementedError("Sensory feedback must implemented for each environment.")
 
     def _predictable_feedback(self):
         for i in range(N_PREDICTABLE_CYCLES):
