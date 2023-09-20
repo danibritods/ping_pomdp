@@ -1,6 +1,6 @@
 import random
 
-class PongGame():
+class Pong():
     def __init__(self):
         self.screen_width = 320 #640
         self.screen_height = 480
@@ -47,7 +47,19 @@ class PongGame():
         else:
             self.rally += status
 
-        return status, self.rally, self.paddle_y, self.ball_x, self.ball_y
+        print(self._sensory_feedback())
+
+        #status, 
+        return status, self.rally, self.ball_x, self.ball_y, self.paddle_y
+
+    def _sensory_feedback(self):
+        ball_x = self.ball_x 
+        ball_y = self.ball_y + self.ball_radius / 2
+        paddle_Y = self.paddle_y + self.paddle_height / 2
+
+        n = 4
+
+        return round(((paddle_Y - ball_y) / self.screen_height) * n)
 
     def _check_collision(self):
         paddle_top = self.paddle_y
