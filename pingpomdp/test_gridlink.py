@@ -9,6 +9,12 @@ class ModelPatch():
     def observe(self, observation):
         obs = observation.copy()
         self.observations.append(obs)
+
+class GridTest(g.Gridlink):
+    def _active_cell_index(self, env_state):
+        """"Mock function just to test sensory feedback"""
+        #env_state: status, rally, paddle_y, ball_x, ball_y 
+        return env_state[4]
     
 
 
@@ -51,3 +57,29 @@ def test_unpredictable_feedback():
     test_grid._unpredictable_feedback()
 
     npt.assert_array_equal(agent.observations, exp_obs)
+
+def test_sensory_feedback_01():
+    agent = ModelPatch()
+    grid = GridTest(agent, (1,4),(1,2), observation_mode="sensory_cells")
+
+    #env_state = status, rally, paddle_y, ball_x, ball_y 
+    env_state = [0,0,0,0,1]
+    grid._sensory_feedback(env_state)
+    obs = agent.observations
+
+    exp_obs = np.array([0,1])
+
+    npt.assert_array_equal(obs[0], exp_obs)
+
+def test_sensory_feedback_10():
+    agent = ModelPatch()
+    grid = GridTest(agent, (1,4),(1,2), observation_mode="sensory_cells")
+
+    #env_state = status, rally, paddle_y, ball_x, ball_y 
+    env_state = [0,0,0,0,0]
+    grid._sensory_feedback(env_state)
+    obs = agent.observations
+
+    exp_obs = np.array([1,0])
+
+    npt.assert_array_equal(obs[0], exp_obs)

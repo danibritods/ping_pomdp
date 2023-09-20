@@ -6,6 +6,7 @@ SENSORY_CELLS = (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
 OBSERVATION_MODE = "whole_grid" #agent can observe "whole_grid" or just "sensory_cells"
 N_PREDICTABLE_CYCLES = 200
 N_UNPREDICTABLE_CYCLES = 5
+VALUE_OF_ACTIVE_CELL = 1
 
 class Gridlink:
     def __init__(self, agent, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE):
@@ -69,8 +70,15 @@ class Gridlink:
     def env_state_is_desirable(self, env_state):
         raise NotImplementedError("Desired state must be defined for each environment.")
 
-    def _sensory_feedback(env_state):
-        raise NotImplementedError("Sensory feedback must implemented for each environment.")
+    def _sensory_feedback(self, env_state):
+        n_sensory_cells = self.n_sensory_cells
+
+        active_cell_index = self._active_cell_index(env_state)
+
+        observation = np.zeros(n_sensory_cells)
+        observation[active_cell_index] = VALUE_OF_ACTIVE_CELL
+        self.write_sensory_cells(observation)
+        self.agent.observe(self.send_observation())
 
     def _predictable_feedback(self):
         for i in range(N_PREDICTABLE_CYCLES):
@@ -87,8 +95,9 @@ class Gridlink:
             rand_obs = RNG.integers(0,2,self.n_sensory_cells)
             self.write_sensory_cells(rand_obs)
             self.agent.observe(self.send_observation())
-            
         
+    def _active_cell_index(self, env_state):
+        raise NotImplementedError("Index of active sensorial cell from env_state mus be defined.")
 
     def _oneD_to_twoD(self,index):
         n = self.shape[1]
