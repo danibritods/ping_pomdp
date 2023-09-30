@@ -9,8 +9,9 @@ N_UNPREDICTABLE_CYCLES = 5
 VALUE_OF_ACTIVE_CELL = 1
 
 class Gridlink:
-    def __init__(self, agent, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE):
+    def __init__(self, agent, env, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE):
         self.agent = agent
+        self.env = env
         self.shape = grid_shape
         self.grid_array = np.zeros(grid_shape)
 
@@ -21,6 +22,9 @@ class Gridlink:
             self.send_observation = self.read_all
         elif observation_mode == "sensory_cells":
             self.send_observation = self.read_sensory_cells
+        # TODO: add "sensory_region" mode. A function to:
+        #   1) find all the sensory region (sensory cells superset)
+        #   2) send this area in the observation
         else:
             raise ValueError("observation_mode invalid! It can be either 'whole_grid' or 'sensory_cells'")
         #add the option of sensory AREA instead of only sensory CELLS
