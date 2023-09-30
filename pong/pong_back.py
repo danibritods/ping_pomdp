@@ -1,4 +1,5 @@
 import random
+from collections import namedtuple
 
 class Pong():
     def __init__(self):
@@ -49,8 +50,12 @@ class Pong():
 
         print(self._sensory_feedback())
 
-        #status, 
-        return status, self.rally, self.ball_x, self.ball_y, self.paddle_y
+        
+        ball_x_center = self.ball_x + self.ball_radius / 2 
+        ball_y_center = self.ball_y + self.ball_radius / 2
+        paddle_y_center = self.paddle_y + self.paddle_height / 2
+        GameState = namedtuple('GameState', ['status', 'rally', 'ball_x', 'ball_y', 'paddle_y'])
+        return GameState(status, self.rally, ball_x_center, ball_y_center , paddle_y_center)
 
     def _sensory_feedback(self):
         ball_x = self.ball_x 

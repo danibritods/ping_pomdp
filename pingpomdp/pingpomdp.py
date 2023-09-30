@@ -11,13 +11,17 @@ class Model:
 
 class PongGridlink(gridlink.Gridlink):
     def _env_state_is_undesirable(self, env_state):
-        pass
+        if env_state.status < 0:
+            return True
+        else:
+            return False
+        
+    def _env_state_is_desirable(self, env_state):
+        if env_state.status >= 1:
+            return True
+        else:
+            return False
 
-    def env_state_is_desirable(self, env_state):
-        pass
-
-    def _sensory_feedback(env_state):
-        pass
 
 class PingPOMDP:
     def __init__(self):
