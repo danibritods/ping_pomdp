@@ -10,11 +10,18 @@ class ModelPatch():
         obs = observation.copy()
         self.observations.append(obs)
 
+    def act(self, mock_return = [0]):
+        return mock_return
+
+
 class GridTest(g.Gridlink):
     def _active_cell_index(self, env_state):
         """"Mock function just to test sensory feedback"""
         #env_state: status, rally, paddle_y, ball_x, ball_y 
         return env_state[4]
+    
+    def _map_agent_action_to_env(self, agent_action):
+        return agent_action
     
 class Game():
     def step(self,env_state):
@@ -85,3 +92,20 @@ def test_sensory_feedback_10():
     exp_obs = np.array([1,0])
 
     npt.assert_array_equal(obs[0], exp_obs)
+
+def test_env_access_through_grid():
+    environment = Game()
+    grid = GridTest(None, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    assert grid.env.step("test") == "test"
+
+def test_agent_act_through_grid():
+    agent = ModelPatch()
+    environment = Game()
+    grid = GridTest(agent, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    assert grid.agent.act() == [0]
+
+def test_grid_act():
+    agent = ModelPatch()
+    environment = Game()
+    grid = GridTest(agent, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    assert grid.act() == [0]
