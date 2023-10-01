@@ -95,17 +95,15 @@ def test_sensory_feedback_10():
 
 def test_env_access_through_grid():
     environment = Game()
-    grid = GridTest(None, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    grid = GridTest(None, environment)
     assert grid.env.step("test") == "test"
 
 def test_agent_act_through_grid():
     agent = ModelPatch()
-    environment = Game()
-    grid = GridTest(agent, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    grid = GridTest(agent, None)
     assert grid.agent.act() == [0]
 
 def test_grid_act():
     agent = ModelPatch()
-    environment = Game()
-    grid = GridTest(agent, environment, (1,4),(1,2), observation_mode="sensory_cells")
+    grid = GridTest(agent, None)
     assert grid.act() == [0]
