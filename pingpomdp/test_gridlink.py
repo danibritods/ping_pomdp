@@ -26,15 +26,15 @@ def test_grid_basic():
 
 def test_grid_write():
     test_grid = g.Gridlink(None, None, (4,8))
-    test_grid.write([1,2,3],[1,2,3])
+    test_grid._write_cells([1,2,3],[1,2,3])
     exp = np.array([0,1,2,3,0,0,0,0])   
     npt.assert_array_equal(test_grid.grid_array[0], exp)
 
 def test_grid_read():
     test_grid = g.Gridlink(None, None, (4,8))
-    test_grid.write([1,2,3],[1,2,3])
+    test_grid._write_cells([1,2,3],[1,2,3])
     exp = np.array([2,3])   
-    npt.assert_array_equal(test_grid.read_cells([2,3]), exp)
+    npt.assert_array_equal(test_grid._read_cells([2,3]), exp)
 
 def test_predictable_feedback():
     agent = ModelPatch()
