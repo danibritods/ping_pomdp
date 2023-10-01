@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.testing as npt
-import gridlink as g
+import gridlink.gridlink as g
+
 
 class ModelPatch():
     def __init__(self):

@@ -1,4 +1,4 @@
-import gridlink
+from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
 # import model
 
@@ -9,7 +9,7 @@ class Model:
     def act(self):
         print("model action!")
 
-class PongGridlink(gridlink.Gridlink):
+class PongGridlink(Gridlink):
     def _is_env_state_undesirable(self, env_state):
         if env_state.status < 0:
             return True
@@ -47,8 +47,6 @@ class PingPOMDP:
     def run(self):
         for i in range(10):
             self.grid.step()
-
-
 
 if __name__ == "__main__":
     p = PingPOMDP()
