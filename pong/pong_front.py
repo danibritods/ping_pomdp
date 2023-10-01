@@ -1,7 +1,7 @@
 import pygame
-from pong_back import PongGame
+from pong_back import Pong
 
-class PongUI:
+class PongFront:
     def __init__(self, game):
         pygame.init()
 
@@ -59,11 +59,6 @@ class PongUI:
             self.clock.tick(self.fps)
 
 if __name__ == "__main__":
-    game = PongGame()
-    ui = PongUI(game)
-    ui.run()
-    
-
-
-
-    
+    game = Pong()
+    interface = PongFront(game)
+    interface.run()

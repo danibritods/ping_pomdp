@@ -35,6 +35,9 @@ class PongGridlink(gridlink.Gridlink):
         
         return capped_norm_rel_pos
 
+    def _map_agent_action_to_env(self, agent_action):
+        return super()._map_agent_action_to_env(agent_action)
+    
 class PingPOMDP:
     def __init__(self):
         env = Pong()

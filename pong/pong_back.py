@@ -48,7 +48,7 @@ class Pong():
         else:
             self.rally += status
 
-        print(self._sensory_feedback())
+        # print(self._sensory_feedback())
 
         
         ball_x_center = self.ball_x + self.ball_radius / 2 
@@ -62,9 +62,9 @@ class Pong():
         ball_y = self.ball_y + self.ball_radius / 2
         paddle_Y = self.paddle_y + self.paddle_height / 2
 
-        n = 4
+        n = 30
 
-        return round(((paddle_Y - ball_y) / self.screen_height) * n)
+        return round(((paddle_Y - ball_y) / self.screen_height) * n + n/2)
 
     def _check_collision(self):
         paddle_top = self.paddle_y
@@ -114,3 +114,4 @@ class Pong():
             ball_speed = [-5,random.randint(-10,10)]
             
             return ball_x, ball_y, ball_speed
+        raise ValueError("Invalid launch_ball_mode.")
