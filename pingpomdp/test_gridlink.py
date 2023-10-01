@@ -23,6 +23,21 @@ class GridTest(g.Gridlink):
     def _map_agent_action_to_env(self, agent_action):
         return agent_action
     
+class GridObserve(GridTest):
+        """
+        This function:
+            - Defines both desirable and undesirable states to false. 
+                This ensures neutra state to apply only sensory feedback
+            - Defines sensory feedback simply to isolate test
+        """
+        def _is_env_state_desirable(self, env_state):
+            return False
+        def _is_env_state_undesirable(self, env_state):
+            return False
+        def _sensory_feedback(self, env_state):
+            self.agent.observe(env_state)
+
+    
 class Game():
     def step(self,env_state):
         return env_state
@@ -107,3 +122,26 @@ def test_grid_act():
     agent = ModelPatch()
     grid = GridTest(agent, None)
     assert grid.act() == [0]
+
+def test_grid_observe():
+    agent = ModelPatch()
+    environment = Game()
+    grid = GridObserve(agent, environment)
+
+    action = grid.act()
+    grid.observe(action)
+    
+    obs = agent.observations
+    exp_obs = [[0]]
+    assert obs == exp_obs
+
+def test_grid_step():
+    agent = ModelPatch()
+    environment = Game()
+    grid = GridObserve(agent, environment)
+
+    grid.step()
+
+    obs = agent.observations
+    exp_obs = [[0]]
+    assert obs == exp_obs
