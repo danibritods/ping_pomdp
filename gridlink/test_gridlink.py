@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 import gridlink.gridlink as g
+import pytest
 
 
 class ModelPatch():
@@ -52,6 +53,12 @@ def test_grid_write():
     test_grid._write_cells([1,2,3],[1,2,3])
     exp = np.array([0,1,2,3,0,0,0,0])   
     npt.assert_array_equal(test_grid.grid_array[0], exp)
+
+def test_grid_write_less_values_than_cells():
+    test_grid = g.Gridlink(None, None, (4,8))
+    with pytest.raises(ValueError):
+        test_grid._write_cells([1,2,3],[1,2]) 
+
 
 def test_grid_read():
     test_grid = g.Gridlink(None, None, (4,8))

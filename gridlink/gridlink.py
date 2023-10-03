@@ -120,6 +120,8 @@ class Gridlink:
         return self.grid_array[rows, cols]
 
     def _write_cells(self, cells_to_write, values):
+        if len(values) != len(cells_to_write):
+            raise ValueError("Number of values to write must be equal to the number of cells to be written.")
         rows, cols = self._cells_to_rows_cols(cells_to_write)
         self.grid_array[rows, cols] = values
 
