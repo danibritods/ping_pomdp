@@ -1,5 +1,7 @@
 from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
+from agent.agent import ActiveInferenceAgent
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pickle
@@ -39,17 +41,26 @@ class PongGridlink(Gridlink):
         return capped_norm_rel_pos
 
     def _map_agent_action_to_env(self, agent_action):
-        return super()._map_agent_action_to_env(agent_action)
+        # Map the agent's action (0 or 1) to environment's actions (-1 or 1)
+        return -1 if agent_action == 0 else 1
     
 class PingPOMDP:
     def __init__(self):
-        env = Pong()
-        model = None
-        self.grid = PongGridlink(model,env)
+        self.grid = PongGridlink(agent=ActiveInferenceAgent(),
+                                 env=Pong())
 
     def run(self):
         for i in range(10):
             self.grid.step()
+
+    def save_agent(self, filename=None):
+        if filename == None:
+            timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
+            filename = f"agent_{timestamp}.pkl"
+        
+        with open(f"{filename}.pkl", "wb") as file:
+            pickle.dump(self.agent, file)
+
 
 if __name__ == "__main__":
     p = PingPOMDP()
