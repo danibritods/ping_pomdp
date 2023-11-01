@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
 from agent.agent import ActiveInferenceAgent
+from data.database import ExperimentDB
 
 logging.basicConfig(level=logging.INFO)
 
@@ -85,15 +86,46 @@ class PingPOMDP:
 
 
     def run(self, num_steps=10):
+
+        start_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
+        experiment_id = self.db.start_experiment(start_time=start_time,
+                                                 config_id=self.config_id,
+                                                 notes= "")
+
         try:
+            hits = 0
+            misses = 0
+            three_plus_rallies = 0
+
             for i in range(num_steps):
                 self.grid.step()
-                logging.info(f"Step {i+1}: Agent's action: {self.grid.agent_action}, Environment state: {self.grid.env_state}")
+                if self.grid.env_state.status == 1:
+                    hits += 1
+                    if self.grid.env_state.rally == 3:
+                        three_plus_rallies += 1
+                elif self.grid.env_state.status == -1:
+                    misses += 1
+
+                logging.info(f"Step {i + 1}: Agent's action: {self.grid.agent_action}\
+                             ,({hits},{three_plus_rallies},{misses})\
+                             Environment state: {self.grid.env_state}")
                 
+                self.db.insert_step(experiment_id=experiment_id,
+                                    step_num=(i+1),
+                                    environment_state=self.grid.env_state,
+                                    agent_action=self.grid.agent_action)
+
+        except KeyboardInterrupt:
+            pass
         finally:
-            # print("\nCtrl+C pressed. Gracefully stopping...")
+            end_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
+            steps_taken = i + 1
+
+            self.db.finalize_experiment(experiment_id=experiment_id,
+                                        end_time=end_time,
+                                        steps_taken=(i+1))
+            self.db.close()
             self.save_agent()
-            
 
     def save_agent(self, filename=None):
         if filename == None:
