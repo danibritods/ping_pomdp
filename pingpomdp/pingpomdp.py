@@ -1,5 +1,5 @@
 import logging
-import os
+from pathlib import Path
 import numpy as np
 import pickle
 from datetime import datetime
@@ -51,38 +51,29 @@ class PongGridlink(Gridlink):
         # Map the agent's action (0 or 1) to environment's actions (-1 or 1)
         return -1 if agent_action == 0 else 1
     
+class RandomAgent():
+    def observe(self, observation):
+        pass
+    def act(self):
+        return np.random.randint(0,1) 
+
 class PingPOMDP:
-    def __init__(self, seed=None, pong_config=None, agent_config=None, gridlink_config=None):
+    def __init__(self, seed=None, pong_config=None, agent_config=None, gridlink_config={}):
         self.db = ExperimentDB()
         self.config_id = self.db.get_config_id(random_seed=seed,
                                                pong_config=pong_config,
                                                agent_config=agent_config,
                                                gridlink_config=gridlink_config)
-        
 
         # Set random seeds for reproducibility
         if seed:
             np.random.seed(seed)
 
-        if pong_config:
-            env = Pong(**pong_config)
-        else:
-            env = Pong()
-
-        if not agent_config or not agent_config['filename']:
-            agent = ActiveInferenceAgent(n_obs=agent_config['n_obs'],
-                                         n_states=agent_config['n_states'])
-        else:
-            agent = self.load_agent(agent_config['filepath'])
-
-
-        if gridlink_config:
-            self.grid = PongGridlink(agent=agent,
-                                    env=env,
-                                    **gridlink_config)
-        else: 
-            self.grid = PongGridlink(agent=agent,
-                        env=env)
+        env = Pong(**(pong_config or {}))
+        agent_id = agent_config.get('agent_id')
+        agent = self.load_agent(agent_id) if agent_id else ActiveInferenceAgent(n_obs=agent_config['n_obs'],
+                                                                               n_states=agent_config['n_states'])
+        self.grid = PongGridlink(agent=agent, env=env, **gridlink_config)
 
 
     def run(self, num_steps=10):
@@ -91,24 +82,20 @@ class PingPOMDP:
         experiment_id = self.db.start_experiment(start_time=start_time,
                                                  config_id=self.config_id,
                                                  notes= "")
-
+        hits, misses, three_plus_rallies = 0, 0, 0
         try:
-            hits = 0
-            misses = 0
-            three_plus_rallies = 0
-
             for i in range(num_steps):
                 self.grid.step()
-                if self.grid.env_state.status == 1:
+                env_state = self.grid.env_state
+
+                if env_state.status == 1:
                     hits += 1
-                    if self.grid.env_state.rally == 3:
+                    if env_state.rally == 3:
                         three_plus_rallies += 1
                 elif self.grid.env_state.status == -1:
                     misses += 1
 
-                logging.info(f"Step {i + 1}: Agent's action: {self.grid.agent_action}\
-                             ,({hits},{three_plus_rallies},{misses})\
-                             Environment state: {self.grid.env_state}")
+                logging.info(f"Step {i + 1}; Agent's action: {self.grid.agent_action};({hits},{three_plus_rallies},{misses});{self.grid.env_state}")
                 
                 self.db.insert_step(experiment_id=experiment_id,
                                     step_num=(i+1),
@@ -119,7 +106,6 @@ class PingPOMDP:
             pass
         finally:
             end_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
-            steps_taken = i + 1
 
             self.db.finalize_experiment(experiment_id=experiment_id,
                                         end_time=end_time,
@@ -127,30 +113,32 @@ class PingPOMDP:
             self.db.close()
             self.save_agent()
 
-    def save_agent(self, filename=None):
-        if filename == None:
-            timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
-            filename = f"agent/archive/agent_{timestamp}.pkl"
+    def save_agent(self):
+        timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
+        filename = f"agent/archive/agent_{timestamp}.pkl"
         
         with open(filename, "wb") as file:
             pickle.dump(self.grid.agent, file)
         logging.info(f"Agent saved to {filename}")
 
-    def load_agent(self, filename):
-        if os.path.exists(filename):
-            with open(filename, "rb") as file:
+    def load_agent(self, agent_id):
+        agent_dir = Path("agent/archive")
+        agent_files = sorted(agent_dir.glob(f"{agent_id}_*.pkl"), reverse=True)
+        if agent_files:
+            latest_agent_file = agent_files[0]
+            with latest_agent_file.open("rb") as file:
+                logging.info(f"Agent loaded from {latest_agent_file}")
                 return pickle.load(file)
-            logging.info(f"Agent loaded from {filename}")
         else:
-            logging.error(f"File {filename} not found!")
+            logging.error(f"No agent files found for ID {agent_id}!")
 
 if __name__ == "__main__":
-    random_seed = 1
+    random_seed = 2
     pong_config = {
         "screen_width": 320,
         "screen_height": 480,
         "ball_base_speed": 5,
-        "ball_radius": 30,
+        "ball_radius": 20,
         "launch_ball_mode": "fix",
         "paddle_speed": 30,
         "paddle_width": 15,
@@ -159,14 +147,14 @@ if __name__ == "__main__":
         }
     
     agent_config = {
-        "n_obs": 8,
-        "n_states": 4,
-        "filename": None 
+        "n_obs": 5,
+        "n_states": 3,
+        "agent_id": "agent_20231101_122848" 
     }
 
     gridlink_config = {
-        "grid_shape": (2, 8),
-        "sensory_cells": (0, 1, 2, 3, 4, 5, 6, 7),
+        "grid_shape": (2, 5),
+        "sensory_cells": (0, 1, 2, 3, 4),
         "observation_mode": "sensory_cells" 
     }
 
@@ -174,4 +162,4 @@ if __name__ == "__main__":
                   pong_config=pong_config,
                   agent_config=agent_config,
                   gridlink_config=gridlink_config)  
-    p.run(num_steps=2)
+    p.run(num_steps=30_000)
