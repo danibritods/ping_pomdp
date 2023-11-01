@@ -1,6 +1,6 @@
 import logging
 import os
-import np
+import numpy as np
 import pickle
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -10,7 +10,7 @@ from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
 from agent.agent import ActiveInferenceAgent
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 class PongGridlink(Gridlink):
     def _is_env_state_undesirable(self, env_state):
@@ -67,14 +67,20 @@ class PingPOMDP:
                                  observation_mode=observation_mode)
 
     def run(self, num_steps=10):
-        for i in range(num_steps):
-            self.grid.step()
-            logging.info(f"Step {i+1}: Agent's action: {self.grid.agent_action}, Environment state: {self.grid.env_state}")
+        try:
+            for i in range(num_steps):
+                self.grid.step()
+                logging.info(f"Step {i+1}: Agent's action: {self.grid.agent_action}, Environment state: {self.grid.env_state}")
+                
+        except KeyboardInterrupt:
+            print("\nCtrl+C pressed. Gracefully stopping...")
+            self.save_agent()
+            
 
     def save_agent(self, filename=None):
         if filename == None:
             timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
-            filename = f"agent_{timestamp}.pkl"
+            filename = f"agent/archive/agent_{timestamp}.pkl"
         
         with open(filename, "wb") as file:
             pickle.dump(self.grid.agent, file)
@@ -90,4 +96,4 @@ class PingPOMDP:
 
 if __name__ == "__main__":
     p = PingPOMDP(seed=42)  
-    p.run(num_steps=20)
+    p.run(num_steps=200)
