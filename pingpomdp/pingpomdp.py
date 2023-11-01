@@ -51,23 +51,38 @@ class PongGridlink(Gridlink):
         return -1 if agent_action == 0 else 1
     
 class PingPOMDP:
-    def __init__(self, seed=None):
+    def __init__(self, seed=None, pong_config=None, agent_config=None, gridlink_config=None):
+        self.db = ExperimentDB()
+        self.config_id = self.db.get_config_id(random_seed=seed,
+                                               pong_config=pong_config,
+                                               agent_config=agent_config,
+                                               gridlink_config=gridlink_config)
+        
+
         # Set random seeds for reproducibility
         if seed:
             np.random.seed(seed)
 
-        grid_shape = (2,8)
-        sensory_cells = (0,1,2,3,4,5,6,7)
-        observation_mode = "sensory_cells" 
-        #agent = ActiveInferenceAgent(8)
-        agent = self.load_agent('agent/archive/agent_20231031_234900.pkl')
+        if pong_config:
+            env = Pong(**pong_config)
+        else:
+            env = Pong()
+
+        if not agent_config or not agent_config['filename']:
+            agent = ActiveInferenceAgent(n_obs=agent_config['n_obs'],
+                                         n_states=agent_config['n_states'])
+        else:
+            agent = self.load_agent(agent_config['filepath'])
 
 
-        self.grid = PongGridlink(agent=agent,
-                                 env=Pong(),
-                                 grid_shape=grid_shape,
-                                 sensory_cells=sensory_cells,
-                                 observation_mode=observation_mode)
+        if gridlink_config:
+            self.grid = PongGridlink(agent=agent,
+                                    env=env,
+                                    **gridlink_config)
+        else: 
+            self.grid = PongGridlink(agent=agent,
+                        env=env)
+
 
     def run(self, num_steps=10):
         try:
@@ -98,5 +113,33 @@ class PingPOMDP:
             logging.error(f"File {filename} not found!")
 
 if __name__ == "__main__":
-    p = PingPOMDP(seed=1)  
-    p.run(num_steps=100_000)
+    random_seed = 1
+    pong_config = {
+        "screen_width": 320,
+        "screen_height": 480,
+        "ball_base_speed": 5,
+        "ball_radius": 30,
+        "launch_ball_mode": "fix",
+        "paddle_speed": 30,
+        "paddle_width": 15,
+        "paddle_x": 10,
+        "paddle_over_screen_proportion": 0.3
+        }
+    
+    agent_config = {
+        "n_obs": 8,
+        "n_states": 4,
+        "filename": None 
+    }
+
+    gridlink_config = {
+        "grid_shape": (2, 8),
+        "sensory_cells": (0, 1, 2, 3, 4, 5, 6, 7),
+        "observation_mode": "sensory_cells" 
+    }
+
+    p = PingPOMDP(seed=random_seed,
+                  pong_config=pong_config,
+                  agent_config=agent_config,
+                  gridlink_config=gridlink_config)  
+    p.run(num_steps=2)
