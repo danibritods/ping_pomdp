@@ -2,20 +2,21 @@ import random
 from collections import namedtuple
 
 class Pong():
-    def __init__(self):
-        self.screen_width = 320 #640
-        self.screen_height = 480
+    def __init__(self, screen_width=320, screen_height=480, 
+                 ball_base_speed=5, ball_radius=30, launch_ball_mode="fix",
+                 paddle_speed=30, paddle_width=15, paddle_x=10, paddle_proportion=0.3):
+        
+        self.screen_width = screen_width
+        self.screen_height = screen_height
 
-        self.ball_radius = 30
+        self.ball_speed = ball_base_speed
+        self.ball_radius = ball_radius
+        self.launch_ball_mode = launch_ball_mode
 
-        self.paddle_speed = 30
-        self.paddle_width = 15
-        self.paddle_height = self.screen_height * 0.3
-        self.paddle_x = 10
-
-        #"rand" or "fix"
-        self.launch_ball_mode = "fix"
-
+        self.paddle_speed = paddle_speed
+        self.paddle_width = paddle_width
+        self.paddle_height = self.screen_height * paddle_proportion
+        self.paddle_x = paddle_x
 
         self.reset()
 
@@ -93,7 +94,7 @@ class Pong():
         if self.launch_ball_mode == "fix":
             ball_x = self.screen_width * 0.8
             ball_y = self.screen_height * 0.2
-            ball_speed = [-5,5]
+            ball_speed = [-self.ball_base_speed, self.ball_base_speed]
         
             return ball_x, ball_y, ball_speed
         
@@ -103,7 +104,7 @@ class Pong():
             #same x speed, random y 
             ball_x = self.screen_width * 0.8
             ball_y = random.randint(self.screen_height * 0.2, self.screen_height * 0.8)
-            ball_speed = [-5,random.randint(-10,10)]
+            ball_speed = [-self.ball_base_speed, random.randint(-(2*self.ball_base_speed), (2*self.ball_base_speed))]
             
             return ball_x, ball_y, ball_speed
         raise ValueError("Invalid launch_ball_mode.")
