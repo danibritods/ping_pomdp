@@ -14,7 +14,7 @@ class Pong():
         self.paddle_x = 10
 
         #"rand" or "fix"
-        self.launch_ball_mode = "rand"
+        self.launch_ball_mode = "fix"
 
 
         self.reset()
@@ -57,14 +57,6 @@ class Pong():
         GameState = namedtuple('GameState', ['status', 'rally', 'ball_x', 'ball_y', 'paddle_y'])
         return GameState(status, self.rally, ball_x_center, ball_y_center , paddle_y_center)
 
-    def _sensory_feedback(self):
-        ball_x = self.ball_x 
-        ball_y = self.ball_y + self.ball_radius / 2
-        paddle_Y = self.paddle_y + self.paddle_height / 2
-
-        n = 30
-
-        return round(((paddle_Y - ball_y) / self.screen_height) * n + n/2)
 
     def _check_collision(self):
         paddle_top = self.paddle_y

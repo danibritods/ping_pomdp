@@ -10,7 +10,7 @@ from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
 from agent.agent import ActiveInferenceAgent
 
-# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 class PongGridlink(Gridlink):
     def _is_env_state_undesirable(self, env_state):
@@ -59,8 +59,11 @@ class PingPOMDP:
         grid_shape = (2,8)
         sensory_cells = (0,1,2,3,4,5,6,7)
         observation_mode = "sensory_cells" 
+        #agent = ActiveInferenceAgent(8)
+        agent = self.load_agent('agent/archive/agent_20231031_234900.pkl')
 
-        self.grid = PongGridlink(agent=ActiveInferenceAgent(),
+
+        self.grid = PongGridlink(agent=agent,
                                  env=Pong(),
                                  grid_shape=grid_shape,
                                  sensory_cells=sensory_cells,
@@ -72,8 +75,8 @@ class PingPOMDP:
                 self.grid.step()
                 logging.info(f"Step {i+1}: Agent's action: {self.grid.agent_action}, Environment state: {self.grid.env_state}")
                 
-        except KeyboardInterrupt:
-            print("\nCtrl+C pressed. Gracefully stopping...")
+        finally:
+            # print("\nCtrl+C pressed. Gracefully stopping...")
             self.save_agent()
             
 
@@ -89,11 +92,11 @@ class PingPOMDP:
     def load_agent(self, filename):
         if os.path.exists(filename):
             with open(filename, "rb") as file:
-                self.grid.agent = pickle.load(file)
+                return pickle.load(file)
             logging.info(f"Agent loaded from {filename}")
         else:
             logging.error(f"File {filename} not found!")
 
 if __name__ == "__main__":
-    p = PingPOMDP(seed=42)  
-    p.run(num_steps=200)
+    p = PingPOMDP(seed=1)  
+    p.run(num_steps=100_000)

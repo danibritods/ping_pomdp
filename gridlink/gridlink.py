@@ -4,8 +4,8 @@ RNG = np.random.default_rng(seed=42)
 GRID_SHAPE = (4,8)
 SENSORY_CELLS = (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
 OBSERVATION_MODE = "whole_grid" #agent can observe "whole_grid" or just "sensory_cells"
-N_PREDICTABLE_CYCLES = 200
-N_UNPREDICTABLE_CYCLES = 5
+N_PREDICTABLE_CYCLES = 10
+N_UNPREDICTABLE_CYCLES = 400 
 VALUE_OF_ACTIVE_CELL = 1
 
 class Gridlink:
@@ -46,12 +46,14 @@ class Gridlink:
         self._sensory_feedback(env_state)
 
     def act(self): #-> env_action: 
-       return self._map_agent_action_to_env(self.agent.act())
+       self.agent_action = self.agent.act()
+       self.env_action = self._map_agent_action_to_env(self.agent_action)
+       return self.env_action
     
     def step(self):
         action = self.act()
-        env_state = self.env.step(action)
-        self.observe(env_state)
+        self.env_state = self.env.step(action)
+        self.observe(self.env_state)
 
     def _sensory_feedback(self, env_state):
         n_sensory_cells = self.n_sensory_cells
@@ -68,16 +70,14 @@ class Gridlink:
             ones = np.ones(self.n_sensory_cells)
             self._write_sensory_cells(ones)
             self.agent.observe(self.send_observation())
-
-            zeros = np.zeros(self.n_sensory_cells)
-            self._write_sensory_cells(zeros)
-            self.agent.observe(self.send_observation())
+            print("pr")
 
     def _unpredictable_feedback(self):
         for i in range(N_UNPREDICTABLE_CYCLES):
             rand_obs = RNG.integers(0,2,self.n_sensory_cells)
             self._write_sensory_cells(rand_obs)
             self.agent.observe(self.send_observation())
+            print("un")
        
     def _map_agent_action_to_env(self, agent_action):
         raise NotImplementedError("Agent actions must be mapped to environment actions")
