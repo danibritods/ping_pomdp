@@ -3,10 +3,10 @@ from pymdp import utils
 from pymdp.agent import Agent
 
 class ActiveInferenceAgent:
-    def __init__(self):
+    def __init__(self, n_obs=8, n_states=4):
         # Define observation and action spaces
-        self.num_obs = [2**8]  # 8 binary elements representing the sensory electrodes
-        self.num_states = [2**8]  # 8 binary elements representing possible states
+        self.num_obs = [2**n_obs]  # n binary elements representing the sensory electrodes
+        self.num_states = [2**n_states]  # n binary elements representing possible states
         self.num_controls = [2]  # 0 or 1
 
         # Create the generative model
@@ -22,8 +22,8 @@ class ActiveInferenceAgent:
         Update beliefs based on the received observation.
         """
         # Convert observation (binary array) to index
-        obs_idx = [int("".join(map(str, observation)), 2)]
-        
+        obs_idx = [int("".join(map(str, observation.astype(int))), 2)]
+
         # Update beliefs
         self.agent.infer_states(obs_idx)
 
