@@ -27,6 +27,7 @@ class ExperimentDB:
                     start_time TEXT,
                     end_time TEXT,
                     steps_taken INTEGER,
+                    results TEXT,
                     notes TEXT,
                     FOREIGN KEY (config_id) REFERENCES ExperimentConfig (config_id)
                 );
@@ -77,15 +78,17 @@ class ExperimentDB:
             cur.execute("INSERT INTO Experiment (config_id, start_time, notes) VALUES (?, ?, ?)", (config_id, start_time, notes))
             return cur.lastrowid
 
-    def finalize_experiment(self, experiment_id, end_time, steps_taken):
+    def finalize_experiment(self, experiment_id, end_time, steps_taken, results):
+        results_str = json.dumps(results)
         with self.conn:
-            self.conn.execute("UPDATE Experiment SET end_time = ?, steps_taken = ? WHERE experiment_id = ?", (end_time, steps_taken, experiment_id))
+            self.conn.execute("UPDATE Experiment SET end_time = ?, steps_taken = ?, results = ? WHERE experiment_id = ?", (end_time, steps_taken, experiment_id, results_str))
 
     def insert_step(self, experiment_id, step_num, agent_action, environment_state):
+        env_state_str = json.dumps(environment_state._asdict())  # Convert NamedTuple to dictionary and then to JSON string
         with self.conn:
             cur = self.conn.cursor()
             cur.execute("INSERT INTO Steps (experiment_id, step_num, agent_action, environment_state) VALUES (?, ?, ?, ?)", 
-                        (experiment_id, step_num, agent_action, environment_state))
+                        (experiment_id, step_num, agent_action, env_state_str))
             return cur.lastrowid
 
     def close(self):
