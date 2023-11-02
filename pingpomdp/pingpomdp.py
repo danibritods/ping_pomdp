@@ -58,21 +58,23 @@ class RandomAgent():
         return np.random.randint(0,1) 
 
 class PingPOMDP:
-    def __init__(self, seed=None, pong_config=None, agent_config=None, gridlink_config={}):
+    def __init__(self, seed=1, pong_config=None, agent_config=None, gridlink_config={}):
         self.db = ExperimentDB()
         self.config_id = self.db.get_config_id(random_seed=seed,
                                                pong_config=pong_config,
                                                agent_config=agent_config,
                                                gridlink_config=gridlink_config)
-
-        # Set random seeds for reproducibility
-        if seed:
-            np.random.seed(seed)
-
+        
+        np.random.seed(seed)
+        
         env = Pong(**(pong_config or {}))
+
+        timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
+        
         agent_id = agent_config.get('agent_id')
         agent = self.load_agent(agent_id) if agent_id else ActiveInferenceAgent(n_obs=agent_config['n_obs'],
                                                                                n_states=agent_config['n_states'])
+        self.agent_id = (agent_id or f"agent_{timestamp}")
         self.grid = PongGridlink(agent=agent, env=env, **gridlink_config)
 
 
@@ -122,20 +124,26 @@ class PingPOMDP:
             self.save_agent()
 
     def save_agent(self):
-        timestamp = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y%m%d_%H%M%S')
-        filename = f"agent/archive/agent_{timestamp}.pkl"
+        if not hasattr(self, 'agent_version'):
+            self.agent_version = 0
+
+        filename = f"agent/archive/{self.agent_id}_{int(self.agent_version) + 1}.pkl"
         
         with open(filename, "wb") as file:
             pickle.dump(self.grid.agent, file)
         logging.info(f"Agent saved to {filename}")
 
     def load_agent(self, agent_id):
+        if agent_id == "random":
+            return RandomAgent()
+        
         agent_dir = Path("agent/archive")
         agent_files = sorted(agent_dir.glob(f"{agent_id}_*.pkl"), reverse=True)
         if agent_files:
             latest_agent_file = agent_files[0]
             with latest_agent_file.open("rb") as file:
                 logging.info(f"Agent loaded from {latest_agent_file}")
+                self.agent_version = str(latest_agent_file).split('_')[-1].split(".")[0]
                 return pickle.load(file)
         else:
             logging.error(f"No agent files found for ID {agent_id}!")
@@ -174,17 +182,20 @@ if __name__ == "__main__":
     agent_config = {
         "n_obs": 5,
         "n_states": 3,
-        "agent_id": "agent_20231101_122848" 
+        "agent_id": None 
     }
 
     gridlink_config = {
         "grid_shape": (2, 5),
         "sensory_cells": (0, 1, 2, 3, 4),
-        "observation_mode": "sensory_cells" 
+        "observation_mode": "sensory_cells",
+        "n_predictable_cycles": 10,
+        "n_unpredictable_cycles": 40 
     }
 
     p = PingPOMDP(seed=random_seed,
                   pong_config=pong_config,
                   agent_config=agent_config,
-                  gridlink_config=gridlink_config)  
-    p.run(num_steps=30_000)
+                  gridlink_config=gridlink_config,
+                  )  
+    p.run(num_steps=1_000_000)
