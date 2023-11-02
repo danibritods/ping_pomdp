@@ -70,7 +70,7 @@ class Gridlink:
         self.agent.observe(self.send_observation())
 
     def _predictable_feedback(self):
-        for i in range(self.n_predictale_cycles):
+        for i in range(self.n_predictable_cycles):
             ones = np.ones(self.n_sensory_cells)
             self._write_sensory_cells(ones)
             self.agent.observe(self.send_observation())
