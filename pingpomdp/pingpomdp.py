@@ -106,10 +106,18 @@ class PingPOMDP:
             pass
         finally:
             end_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
-
+    
             self.db.finalize_experiment(experiment_id=experiment_id,
                                         end_time=end_time,
-                                        steps_taken=(i+1))
+                                        steps_taken=(i+1),
+                                        results=(hits,misses,three_plus_rallies))
+            
+            self.append_run_to_agent_metadata(start_time=start_time,
+                                              end_time=end_time,
+                                              steps_taken=(i+1),
+                                              hits=hits,
+                                              misses=misses,
+                                              three_plus_rallies=three_plus_rallies)
             self.db.close()
             self.save_agent()
 
@@ -131,6 +139,23 @@ class PingPOMDP:
                 return pickle.load(file)
         else:
             logging.error(f"No agent files found for ID {agent_id}!")
+
+    def append_run_to_agent_metadata(self, start_time, end_time, steps_taken, hits, misses, three_plus_rallies):
+        if not hasattr(self.grid.agent, 'metadata'):
+                self.grid.agent.metadata = {"run_history":[]}
+
+        self.grid.agent.metadata["run_history"].append({
+            'started': start_time,
+            'finished': end_time,
+            'steps_taken': steps_taken,
+            'results': {
+                'hits': hits,
+                'misses': misses,
+                'three_plus_rallies': three_plus_rallies
+            }
+            })
+
+    
 
 if __name__ == "__main__":
     random_seed = 2
