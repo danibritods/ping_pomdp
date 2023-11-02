@@ -4,18 +4,18 @@ from collections import namedtuple
 class Pong():
     def __init__(self, screen_width=320, screen_height=480, 
                  ball_base_speed=5, ball_radius=30, launch_ball_mode="fix",
-                 paddle_speed=30, paddle_width=15, paddle_x=10, paddle_proportion=0.3):
+                 paddle_speed=30, paddle_width=15, paddle_x=10, paddle_over_screen_proportion=0.3):
         
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.ball_speed = ball_base_speed
+        self.ball_base_speed = ball_base_speed
         self.ball_radius = ball_radius
         self.launch_ball_mode = launch_ball_mode
 
         self.paddle_speed = paddle_speed
         self.paddle_width = paddle_width
-        self.paddle_height = self.screen_height * paddle_proportion
+        self.paddle_height = self.screen_height * paddle_over_screen_proportion
         self.paddle_x = paddle_x
 
         self.reset()
