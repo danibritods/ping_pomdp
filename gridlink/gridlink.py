@@ -10,7 +10,7 @@ VALUE_OF_ACTIVE_CELL = 1
 
 class Gridlink:
     def __init__(self, agent, env, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE,
-                n_predictable_cycles=N_PREDICTABLE_CYCLES, n_unpredictable_cycles=N_UNPREDICTABLE_CYCLES):
+                n_predictable_cycles=N_PREDICTABLE_CYCLES, n_unpredictable_cycles=N_UNPREDICTABLE_CYCLES, feedback=True):
         self.agent = agent
         self.env = env
         self.shape = grid_shape
@@ -21,6 +21,8 @@ class Gridlink:
 
         self.n_predictable_cycles = n_predictable_cycles 
         self.n_unpredictable_cycles = n_unpredictable_cycles
+
+        self.feedback = feedback
 
         if observation_mode == "whole_grid":
             self.send_observation = self._read_all_cells
@@ -41,13 +43,13 @@ class Gridlink:
         """
         This function builds and delivers observations to the agent.
         """
-        if self._is_env_state_undesirable(env_state):
-            self._unpredictable_feedback()
-
-        elif self._is_env_state_desirable(env_state):
-            self._predictable_feedback()
-        
         self._sensory_feedback(env_state)
+        if self.feedback:
+            if self._is_env_state_undesirable(env_state):
+                self._unpredictable_feedback()
+
+            elif self._is_env_state_desirable(env_state):
+                self._predictable_feedback()
 
     def act(self): #-> env_action: 
        self.agent_action = self.agent.act()
