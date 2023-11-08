@@ -63,11 +63,13 @@ class Gridlink:
         n_sensory_cells = self.n_sensory_cells
 
         active_cell_index = self._active_cell_index(env_state)
+        if self.env.ball_speed[0] <= 0:
+            observation = np.zeros(n_sensory_cells)
+            observation[active_cell_index] = VALUE_OF_ACTIVE_CELL
+            # print(observation,self.env.ball_speed[0])
+            self._write_sensory_cells(observation)
+            self.agent.observe(self.send_observation())
 
-        observation = np.zeros(n_sensory_cells)
-        observation[active_cell_index] = VALUE_OF_ACTIVE_CELL
-        self._write_sensory_cells(observation)
-        self.agent.observe(self.send_observation())
 
     def _predictable_feedback(self):
         for i in range(self.n_predictable_cycles):
