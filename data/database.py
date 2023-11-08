@@ -93,3 +93,12 @@ class ExperimentDB:
 
     def close(self):
         self.conn.close()
+
+# Example usage
+# db = ExperimentDB()
+# config_id = db._get_config_id(1, {"screen_width": 320}, {"n_obs": 8}, {"grid_shape": (2, 8)})
+# experiment_id = db.start_experiment(config_id, "2023-10-31 12:00:00", "Test experiment")
+# db.insert_step(experiment_id, 1, 0, "Initial environment state")
+# db.finalize_experiment(experiment_id, "2023-10-31 12:30:00", 1)
+# db.close()
+

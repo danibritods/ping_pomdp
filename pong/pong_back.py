@@ -26,7 +26,7 @@ class Pong():
 
         self.paddle_y = (self.screen_height - self.paddle_height) / 2
 
-        self.rally = 0
+        self.score = 0
 
     def step(self, action):
         """action: (-1,0,1)"""
@@ -44,20 +44,23 @@ class Pong():
         
         #status: hit(1),miss(-1),None(0)
         status = self._check_collision()
-        if status == -1:
-            self.reset()
-        else:
-            self.rally += status
+        if status != -1:
+            self.score += status
 
-        # print(self._sensory_feedback())
-
-        
         ball_x_center = self.ball_x + self.ball_radius / 2 
         ball_y_center = self.ball_y + self.ball_radius / 2
         paddle_y_center = self.paddle_y + self.paddle_height / 2
-        GameState = namedtuple('GameState', ['status', 'rally', 'ball_x', 'ball_y', 'paddle_y'])
-        return GameState(status, self.rally, ball_x_center, ball_y_center , paddle_y_center)
 
+        GameState = namedtuple('GameState', ['status', 'rally', 'ball_x', 'ball_y', 'paddle_y'])
+        state = GameState(status, self.score, ball_x_center, ball_y_center , paddle_y_center)
+
+
+        if status == -1:
+            self.reset()
+
+        # print(self._sensory_feedback())
+
+        return state
 
     def _check_collision(self):
         paddle_top = self.paddle_y
@@ -98,7 +101,7 @@ class Pong():
         
             return ball_x, ball_y, ball_speed
         
-        if self.launch_ball_mode == "rand":
+        if self.launch_ball_mode == "random":
             #random mode
             #same x coordinate, random y 
             #same x speed, random y 
