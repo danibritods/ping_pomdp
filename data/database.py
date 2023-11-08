@@ -81,7 +81,8 @@ class ExperimentDB:
     def finalize_experiment(self, experiment_id, end_time, steps_taken, results):
         results_str = json.dumps(results)
         with self.conn:
-            self.conn.execute("UPDATE Experiment SET end_time = ?, steps_taken = ?, results = ? WHERE experiment_id = ?", (end_time, steps_taken, experiment_id, results_str))
+            self.conn.execute("UPDATE Experiment SET end_time = ?, steps_taken = ?, results = ? WHERE experiment_id = ?", 
+                  (end_time, steps_taken, results_str, experiment_id))
 
     def insert_step(self, experiment_id, step_num, agent_action, environment_state):
         env_state_str = json.dumps(environment_state._asdict())  # Convert NamedTuple to dictionary and then to JSON string
