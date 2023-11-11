@@ -47,13 +47,13 @@ class RandomAgent():
         return np.random.randint(0,2) 
 
 class PingPOMDP:
-    def __init__(self, seed, pong_seed, pong_config, agent_config, gridlink_config):
-        np.random.seed(seed)
-        random.seed(pong_seed)
+    def __init__(self, pong_config, agent_config, gridlink_config):
+        np.random.seed(gridlink_config['agent_seed'])
+        random.seed(gridlink_config['env_seed'])
 
         self.db = ExperimentDB()
-        self.config_id = self.db.get_config_id(random_seed=seed,
-                                               pong_config=pong_config,
+        self.config_id = self.db.get_config_id(
+                                               env_config=pong_config,
                                                agent_config=agent_config,
                                                gridlink_config=gridlink_config)
     
@@ -216,16 +216,17 @@ def test_run():
         # "motor_cells": (3,5),
         "observation_mode": "sensory_cells",
         "n_predictable_cycles": 10,
-        "n_unpredictable_cycles": 20
+        "n_unpredictable_cycles": 20,
+        'agent_seed': 1,
+        'env_seed': 1
     }
 
-    p = PingPOMDP(seed=2,
-                  pong_seed=2,
-                  pong_config=pong_config,
-                  agent_config=agent_config,
-                  gridlink_config=gridlink_config,
-                  )  
-    p.run(num_steps=300)
+    p = PingPOMDP(
+        pong_config=pong_config,
+        agent_config=agent_config,
+        gridlink_config=gridlink_config,
+        )  
+    p.run(num_steps=40_000)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ VALUE_OF_ACTIVE_CELL = 1
 
 class Gridlink:
     def __init__(self, agent, env, grid_shape = GRID_SHAPE, sensory_cells = SENSORY_CELLS, observation_mode = OBSERVATION_MODE,
-                n_predictable_cycles=N_PREDICTABLE_CYCLES, n_unpredictable_cycles=N_UNPREDICTABLE_CYCLES, feedback=True):
+                n_predictable_cycles=N_PREDICTABLE_CYCLES, n_unpredictable_cycles=N_UNPREDICTABLE_CYCLES, feedback=True, agent_seed=None, env_seed=None):
         self.agent = agent
         self.env = env
         self.shape = grid_shape
