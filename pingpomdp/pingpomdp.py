@@ -12,7 +12,7 @@ from pong.pong_back import Pong
 from agent.agent import ActiveInferenceAgent
 from data.database import ExperimentDB
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 class PongGridlink(Gridlink):
     def _is_env_state_undesirable(self, env_state):

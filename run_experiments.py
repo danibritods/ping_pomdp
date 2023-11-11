@@ -5,6 +5,7 @@ def json_append(filename,entry):
     with open(filename, mode='a', encoding='utf-8') as f:
         json.dump(entry, f)
         f.write('\n') 
+        f.write('\n') 
 
 def run_experiment(config):
     pong_config = {
@@ -41,8 +42,8 @@ def run_experiment(config):
         agent_config=agent_config,
         gridlink_config=gridlink_config,
         )  
-    p.run(num_steps=config['num_steps'])
     print()
+    return p.run(num_steps=config['num_steps'])
 
 
 for i in range(5):
@@ -58,7 +59,7 @@ for i in range(5):
         "matrices_mode": 'uniform',
         "agent_seed":1,
         "env_seed":env_seed[i],
-        "num_steps":40_000
+        "num_steps":10
         }
     batch_name = "uniformS1P1-6_40ksteps_3obs.json"
 
