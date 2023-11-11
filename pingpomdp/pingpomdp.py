@@ -131,6 +131,8 @@ class PingPOMDP:
             self.agent_version = 0
 
         filename = f"agent/archive/new/{self.agent_id}_{int(self.agent_version) + 1}.pkl"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
         
         with open(filename, "wb") as file:
             pickle.dump(self.grid.agent, file)
