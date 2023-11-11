@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 from datetime import datetime
 from zoneinfo import ZoneInfo
-
+import random
 
 from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
@@ -46,8 +46,10 @@ class RandomAgent():
         return np.random.randint(0,2) 
 
 class PingPOMDP:
-    def __init__(self, seed, pong_config, agent_config, gridlink_config):
+    def __init__(self, seed, pong_seed, pong_config, agent_config, gridlink_config):
         np.random.seed(seed)
+        random.seed(pong_seed)
+
         self.db = ExperimentDB()
         self.config_id = self.db.get_config_id(random_seed=seed,
                                                pong_config=pong_config,
@@ -75,7 +77,7 @@ class PingPOMDP:
                 self.db.insert_step(experiment_id=experiment_id,
                                     step_num=(i+1),
                                     environment_state=self.grid.env_state,
-                                    agent_action=self.grid.agent_action)
+                                    agent_action=str(self.grid.agent_action))
                 
                 if  int(num_steps * 0.25) == (i + 1):
                     results['t1'] = metrics
@@ -200,7 +202,7 @@ def test_run():
         "n_obs": 2**3,
         "n_states": 2**3,
         "agent_id": None, 
-        "matrices_mode": 'uniform'
+        "matrices_mode": 'random'
     }
 
     gridlink_config = {
@@ -209,15 +211,16 @@ def test_run():
         # "motor_cells": (3,5),
         "observation_mode": "sensory_cells",
         "n_predictable_cycles": 10,
-        "n_unpredictable_cycles": 400
+        "n_unpredictable_cycles": 20
     }
 
-    p = PingPOMDP(seed=4,
+    p = PingPOMDP(seed=2,
+                  pong_seed=2,
                   pong_config=pong_config,
                   agent_config=agent_config,
                   gridlink_config=gridlink_config,
                   )  
-    p.run(num_steps=50_000)
+    p.run(num_steps=300)
 
 
 if __name__ == "__main__":
