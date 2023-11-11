@@ -1,3 +1,4 @@
+import os
 import logging
 from pathlib import Path
 import numpy as np
@@ -138,6 +139,8 @@ class PingPOMDP:
 
     def save_ppdp(self):
         filename = f"data/ppdp/{self.agent_id}-{self.agent_version}.pkl"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
         with open(filename, "wb") as file:
             pickle.dump(self, file)
         logging.info(f"Agent saved to {filename}")
