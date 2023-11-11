@@ -12,8 +12,7 @@ class ExperimentDB:
             self.conn.execute("""
                 CREATE TABLE IF NOT EXISTS ExperimentConfig (
                     config_id INTEGER PRIMARY KEY,
-                    random_seed INTEGER,
-                    pong_config TEXT,
+                    env_config TEXT,
                     agent_config TEXT,
                     gridlink_config TEXT
                 );
@@ -45,31 +44,31 @@ class ExperimentDB:
                 );
             """)
 
-    def get_config_id(self, random_seed, pong_config, agent_config, gridlink_config):
+    def get_config_id(self, env_config, agent_config, gridlink_config):
         """
         Check if a similar configuration already exists in the database.
         If it exists, return the config_id.
         If it doesn't exist, insert the new configuration and return its config_id.
         """
-        pong_config_str = json.dumps(pong_config)
+        env_config_str = json.dumps(env_config)
         agent_config_str = json.dumps(agent_config)
         gridlink_config_str = json.dumps(gridlink_config)
 
         cur = self.conn.cursor()
-        cur.execute("SELECT config_id FROM ExperimentConfig WHERE random_seed = ? AND pong_config = ? AND agent_config = ? AND gridlink_config = ?",
-                    (random_seed, pong_config_str, agent_config_str, gridlink_config_str))
+        cur.execute("SELECT config_id FROM ExperimentConfig WHERE env_config = ? AND agent_config = ? AND gridlink_config = ?",
+                    (env_config_str, agent_config_str, gridlink_config_str))
         
         result = cur.fetchone()
         if result:
             return result[0]
         else:
-            return self.insert_experiment_config(random_seed, pong_config, agent_config, gridlink_config)
+            return self.insert_experiment_config(env_config, agent_config, gridlink_config)
 
-    def insert_experiment_config(self, random_seed, pong_config, agent_config, gridlink_config):
+    def insert_experiment_config(self, env_config, agent_config, gridlink_config):
         with self.conn:
             cur = self.conn.cursor()
-            cur.execute("INSERT INTO ExperimentConfig (random_seed, pong_config, agent_config, gridlink_config) VALUES (?, ?, ?, ?)", 
-                        (random_seed, json.dumps(pong_config), json.dumps(agent_config), json.dumps(gridlink_config)))
+            cur.execute("INSERT INTO ExperimentConfig (env_config, agent_config, gridlink_config) VALUES (?, ?, ?)", 
+                        (json.dumps(env_config), json.dumps(agent_config), json.dumps(gridlink_config)))
             return cur.lastrowid
 
     def start_experiment(self, config_id, start_time, notes=""):
@@ -94,12 +93,4 @@ class ExperimentDB:
 
     def close(self):
         self.conn.close()
-
-# Example usage
-# db = ExperimentDB()
-# config_id = db._get_config_id(1, {"screen_width": 320}, {"n_obs": 8}, {"grid_shape": (2, 8)})
-# experiment_id = db.start_experiment(config_id, "2023-10-31 12:00:00", "Test experiment")
-# db.insert_step(experiment_id, 1, 0, "Initial environment state")
-# db.finalize_experiment(experiment_id, "2023-10-31 12:30:00", 1)
-# db.close()
 
