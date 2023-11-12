@@ -1,5 +1,6 @@
 *.db filter=lfs diff=lfs merge=lfs -text
 data/experiments.db* filter=lfs diff=lfs merge=lfs -text
+data/experiments.db.first_experiments filter=lfs diff=lfs merge=lfs -text
 *.gitignore filter=lfs diff=lfs merge=lfs -text
 *.json filter=lfs diff=lfs merge=lfs -text
 *.md filter=lfs diff=lfs merge=lfs -text
