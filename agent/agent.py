@@ -28,7 +28,6 @@ class ActiveInferenceAgent(Agent):
         # Initialize the agent
         super().__init__(A=A, B=B, C=C)
 
-
     def observe(self, observation):
         """
         Update beliefs based on the received observation.
