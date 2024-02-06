@@ -3,16 +3,19 @@ import logging
 from pathlib import Path
 import numpy as np
 import pickle
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 import random
 
 from gridlink.gridlink import Gridlink
 from pong.pong_back import Pong
+from pong.pong_front import PongFront
 from agent.agent import ActiveInferenceAgent
 from data.database import ExperimentDB
 
-# logging.basicConfig(level=logging.INFO)
+import time
+
+logging.basicConfig(level=logging.INFO)
 
 class PongGridlink(Gridlink):
     def _is_env_state_undesirable(self, env_state):
@@ -61,7 +64,10 @@ class PingPOMDP:
         agent = self.load_agent(agent_config) 
         self.grid = PongGridlink(agent=agent, env=env, **gridlink_config)
 
-    def run(self, num_steps=10):
+    def run(self, num_steps=10, interface=True):
+        if interface:
+            self.run_interface()
+
         start_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
         experiment_id = self.db.start_experiment(start_time=start_time,
                                                  config_id=self.config_id,
@@ -70,7 +76,14 @@ class PingPOMDP:
         results = {}
         try:
             for i in range(num_steps):
-                self.grid.step()
+                frame_start_time = time.time()
+
+                if interface:
+                    self.grid.step()
+                    self.limit_fps(frame_start_time)
+                else:
+                    self.grid.step()
+
                 self.update_metrics(self.grid.env_state, metrics)
 
                 logging.info(f"Step {i + 1}; Agent's action: {self.grid.agent_action};({metrics['hits'],metrics['long_rallies'],metrics['misses']});{self.grid.env_state}")
@@ -87,6 +100,7 @@ class PingPOMDP:
         except Exception as e:
             print(e)
         finally:
+            
             end_time = datetime.now(ZoneInfo("America/Sao_Paulo")).strftime('%Y-%m-%d %H:%M:%S')
 
             self.db.finalize_experiment(experiment_id=experiment_id,
@@ -107,6 +121,23 @@ class PingPOMDP:
                     'results':results,
                     'time':f'{start_time}{end_time}'}
                     
+
+    def run_interface(self):
+        import threading
+        def thread_function():
+            game = self.grid.env
+            interface = PongFront(game)
+            interface.run()
+
+        interface_thread = threading.Thread(target=thread_function)
+        interface_thread.start()
+
+    def limit_fps(self, start_time):
+        frame_duration = 1.0 / 60  # Target frame duration for 60 FPS
+        elapsed_time = (time.time() - start_time)
+        time_to_wait = frame_duration - elapsed_time
+        if time_to_wait > 0:
+            time.sleep(time_to_wait)
 
 
     def update_metrics(self, env_state, metrics):
@@ -192,7 +223,7 @@ class PingPOMDP:
 
 def test_run():
     pong_config = {
-        "screen_width": 320,
+        "screen_width": 640,
         "screen_height": 480,
         "ball_base_speed": 5,
         "ball_radius": 20,
@@ -217,7 +248,7 @@ def test_run():
         "observation_mode": "sensory_cells",
         "n_predictable_cycles": 10,
         "n_unpredictable_cycles": 20,
-        'agent_seed': 1,
+        'agent_seed': 2,
         'env_seed': 1
     }
 
